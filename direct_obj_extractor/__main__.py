@@ -15,6 +15,8 @@ from direct_obj_extractor.gpu_utils import process_on_gpu
 from direct_obj_extractor.text_utils import clean_determiners
 
 if __name__ == "__main__":
+    mp.set_start_method('spawn', force=True)  # Ensure CUDA-safe multiprocessing
+
     config = configparser.ConfigParser()
     config.read("config.ini")
 
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     ds_path = metadata_dict[dataset_name]
 
     # Begin text feature processing
-    df = pd.read_csv(dataset_dir_path + ds_path)[:8]
+    df = pd.read_csv(dataset_dir_path + ds_path)
 
     unique_texts = df[config["data"]["nl_column"]].dropna().unique().tolist()
 
@@ -49,15 +51,14 @@ if __name__ == "__main__":
         gpu_results = pool.starmap(
             process_on_gpu,
             [
-                (
-                    config["experiment"]["model_name"],
-                    gpu_ids[i],
-                    split_texts[i],
-                    int(config["experiment"]["batch_size"]),
-                )
+                (config["experiment"]["model_name"], gpu_ids[i], split_texts[i], int(config["experiment"]["batch_size"]))
                 for i in range(num_gpus)
             ],
         )
+
+    pool.close()  # 🚀 Properly close multiprocessing pool
+    pool.join()   # 🚀 Ensure all processes are cleaned up
+
 
     step_1_results = [item for sublist in gpu_results for item in sublist]
 
