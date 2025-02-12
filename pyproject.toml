@@ -6,7 +6,7 @@ dependencies = [
     "datasets",
     "ipykernel",
     "ipython",
-    "matplotlib",,
+    "matplotlib",
     "transformers",
 ]
 requires-python = "~=3.10"

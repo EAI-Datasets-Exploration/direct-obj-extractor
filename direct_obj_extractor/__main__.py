@@ -11,6 +11,8 @@ import pandas as pd
 import multiprocessing as mp
 import time
 
+from gpu_utils import process_on_gpu
+from text_utils import clean_determiners
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
