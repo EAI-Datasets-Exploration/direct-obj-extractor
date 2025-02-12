@@ -3,6 +3,7 @@ name = "direct_obj_extractor"
 dynamic = ["version"]
 dependencies = [
     "accelerate",
+    "bitsandbytes",
     "datasets",
     "ipykernel",
     "ipython",

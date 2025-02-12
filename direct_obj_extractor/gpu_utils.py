@@ -1,6 +1,12 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    pipeline,
+    BitsAndBytesConfig,
+)
 
-from text_utils import format_prompt, extract_json
+from direct_obj_extractor.text_utils import format_prompt, extract_json
+
 
 # Function to Load LLM on a Specific GPU
 def load_llm_on_gpu(gpu_id, model_name, batch_size):
@@ -14,19 +20,17 @@ def load_llm_on_gpu(gpu_id, model_name, batch_size):
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         quantization_config=bnb_config,
-        device_map={"": gpu_id}, 
-        trust_remote_code=True
+        device_map={"": gpu_id},
+        trust_remote_code=True,
     )
 
     return pipeline(
-        "text-generation",
-        model=model,
-        tokenizer=tokenizer,
-        batch_size=batch_size 
+        "text-generation", model=model, tokenizer=tokenizer, batch_size=batch_size
     )
 
-def process_on_gpu(gpu_id, texts, batch_size):
-    nlp_model = load_llm_on_gpu(gpu_id)
+
+def process_on_gpu(model_name, gpu_id, texts, batch_size):
+    nlp_model = load_llm_on_gpu(gpu_id, model_name, batch_size)
 
     results = []
     for start in range(0, len(texts), batch_size):
